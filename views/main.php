@@ -51,7 +51,9 @@
 					<tr>
 						<td><?=($index + 1)?></td>
 						<?php foreach ( $tbody[ $index ] as $k => $v ): ?>
-						<td><?=$v?></td>
+						<td><?php if( is_numeric( $v )): ?> <span
+							class='glyphicon glyphicon-triangle-top' style='color: green;'></span>
+							<?php endif; ?> <?=$v?></td>
 						<?php endforeach; ?>
 					</tr>
 					<?php endfor; ?>
@@ -66,37 +68,37 @@
 
 
 	<!-- Modal -->
-	<div class="modal fade" id="add_artist" tabindex="-1" role="dialog"
-		aria-labelledby="myModalLabel">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel">Add Artist</h4>
-				</div>
-				<div class="modal-body">
-					<form>
-						<div class='form-group'>
-							<label class='label label-default'>Username: </label> <input
-								type='text' class='form-control' id='username'>
-						</div>
-						<div class='form-group'>
-							<label class='label label-default'>Display Name: </label> <input
-								type='text' class='form-control' id='display_name'>
-						</div>
+	<!-- 	<div class="modal fade" id="add_artist" tabindex="-1" role="dialog" -->
+	<!-- 		aria-labelledby="myModalLabel"> -->
+	<!-- 		<div class="modal-dialog" role="document"> -->
+	<!-- 			<div class="modal-content"> -->
+	<!-- 				<div class="modal-header"> -->
+	<!-- 					<button type="button" class="close" data-dismiss="modal" -->
+	<!-- 						aria-label="Close"> -->
+	<!-- 						<span aria-hidden="true">&times;</span> -->
+	<!-- 					</button> -->
+	<!-- 					<h4 class="modal-title" id="myModalLabel">Add Artist</h4> -->
+	<!-- 				</div> -->
+	<!-- 				<div class="modal-body"> -->
+	<!-- 					<form> -->
+	<!-- 						<div class='form-group'> -->
+	<!-- 							<label class='label label-default'>Username: </label> <input -->
+	<!-- 								type='text' class='form-control' id='username'> -->
+	<!-- 						</div> -->
+	<!-- 						<div class='form-group'> -->
+	<!-- 							<label class='label label-default'>Display Name: </label> <input -->
+	<!-- 								type='text' class='form-control' id='display_name'> -->
+	<!-- 						</div> -->
 
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save changes</button>
-				</div>
-			</div>
-		</div>
-	</div>
+	<!-- 					</form> -->
+	<!-- 				</div> -->
+	<!-- 				<div class="modal-footer"> -->
+	<!-- 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+	<!-- 					<button type="button" class="btn btn-primary">Save changes</button> -->
+	<!-- 				</div> -->
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> -->
 	<!-- End Modal -->
 
 
@@ -115,7 +117,7 @@
 				</div>
 				<div class="modal-body">
 					<form>
-						<div class='form-group'>
+						<div id='stored_artist' class='form-group'>
 							<label class='label label-default'>Artist: </label> <select
 								id='artist' class='form-control'>
 								<?php for( $index = 0; $index < count( $artist ); $index++ ): ?>
@@ -127,11 +129,11 @@
 						</div>
 
 						<div class='form-group'>
-							<a href='javascript:void(0)' onclick='display("modal_part")'>Add New
-								Artist</a>
+							<a href='javascript:void(0)' onclick='display("modal_part")'>Add
+								New Artist</a>
 						</div>
-						<div id='modal_part' >
-						<hr>
+						<div id='modal_part'>
+							<hr>
 							<div class='form-group'>
 								<label class='label label-default'>Username: </label> <input
 									type='text' class='form-control' id='username'>
@@ -155,7 +157,8 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" id='save_track' class="btn btn-primary">Save
+						changes</button>
 				</div>
 			</div>
 		</div>
@@ -168,10 +171,8 @@
 
 	<script
 		src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js'></script>
-	<script
-		src='./assets/scripts/bootstrap.min.js'></script>
-	<script
-		src='./assets/datatables/js/jquery.dataTables.min.js'></script>
+	<script src='./assets/scripts/bootstrap.min.js'></script>
+	<script src='./assets/datatables/js/jquery.dataTables.min.js'></script>
 
 
 
@@ -179,17 +180,43 @@
 	<script>
 		$(document).ready(function() {
 			$('#modal_part').toggle();
-			$('#top_table').dataTable( {
-				"aaSorting": [[ 3, "desc" ]]
-			} );
-			
-			
+
+			$('#top_table').DataTable({
+				"order" : [ [ 4, "desc" ] ]
+			});
+
+			$('#save_track').on('click', function() {
+				addArtist();
+
+			});
+
 		});
-		
-		function display( portion ){
-			$('#' + portion).toggle();
+
+		function display(portion) {
+			$('#modal_part').toggle();
+			$('#stored_artist').toggle();
+
 		}
-		
+
+		function addArtist() {
+
+			var mString = {};
+			mString.action = 'add_artist';
+
+			if ($('#display_name').val().trim().length >= 2 && $('#username').val().trim().length >= 2) {
+				mString.name = $('#username').val();
+				mString.display_name = $('#display_name').val();
+			} else {
+				mString.artist = $('#artist').val().trim();
+			}
+			$.get('', mString, function(data) {
+				alert(data);
+			});
+			
+			$('#display_name').val('');
+			$('#username').val('');
+			
+		}
 	</script>
 
 

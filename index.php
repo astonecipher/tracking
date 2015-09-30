@@ -13,6 +13,10 @@ $action = isset ( $_GET['action'] ) ? trim( strtolower( $_GET['action'] ) ) : ''
 $tracks = new Track();
 $artists = new Artist();
 
+// function validate( $_GET ){
+//     if ( isset( $_GET['artist']))
+// }
+
 function main( $tbody, $artist ){
 
     include './views/main.php';
@@ -20,7 +24,12 @@ function main( $tbody, $artist ){
 
 switch ( $action ){
     
-    
+    case 'add_artist':
+        if ( isset( $_GET['name'] ) && isset( $_GET['display_name'] ) )
+            echo "Received new Artist {$_GET['name']} and {$_GET['display_name']}.";
+        elseif ( isset( $_GET['artist'])) 
+            echo "Using Artist, {$_GET['artist']}.";
+      break;
     default:
         
         $artist = $artists->getAllArtist();
@@ -31,7 +40,6 @@ switch ( $action ){
         main( $tbody, $artist );
     
 }
-
 
 
 
