@@ -1,0 +1,91 @@
+$(document).ready(function() {
+	$('#modal_part').toggle();
+	$('#modal_album').toggle();
+	$('#album_section').toggle();
+	
+	
+	
+	
+	$('#top_table').DataTable({
+		"order" : [ [ 2, "desc" ] ]
+	});
+
+	$('#save_track').on('click', function() {
+		addArtist();
+	});
+
+	$('#artist').on('change', function() {
+		getAlbums($('#artist').val());
+	});
+
+});
+
+function display_new_artist() {
+	$('#modal_part').toggle();
+	$('#album').empty();
+	$('#stored_artist').toggle();
+	$('#album_section').toggle();
+	display_new_album();
+
+}
+
+function display_new_album(){
+	$('#modal_album').toggle();
+	$('#album_part').toggle();	
+}
+function getAlbums(artist_id) {
+
+	var mString = {};
+	mString.action = 'get_albums';
+	mString.artist_id = artist_id;
+	$.getJSON('', mString, function(data) {
+		$('#album').append($('<option>', {
+			value : data.id,
+			text : data.title
+		}));
+		$('#album_section').toggle();
+	});
+
+}
+
+function login_screen(){
+	var mString = {};
+	mString.action = 'login_screen';
+	$.get('',mString, function( data ){
+		$('#display').html( data );
+		$('#login').modal('show');
+	});
+}
+
+
+function login(){
+	var mString = {};
+	mString.action = 'login_details';
+	mString.user = $('#user').val();
+	mString.pass = $('#pass').val();
+	$.post('', mString, function( data ) {
+		$('#login_display').html( data );
+	});
+	
+}
+
+function addArtist() {
+
+	var mString = {};
+	mString.action = 'add_artist';
+
+	if ($('#display_name').val().trim().length >= 2
+			&& $('#username').val().trim().length >= 2) {
+		mString.name = $('#username').val();
+		mString.display_name = $('#display_name').val();
+	} else {
+		mString.artist = $('#artist').val().trim();
+	}
+	$.get('', mString, function(data) {
+		alert(data);
+	});
+
+	$('#display_name').val('');
+	$('#username').val('');
+
+}

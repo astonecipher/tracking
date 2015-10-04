@@ -23,13 +23,12 @@
 				<button class="btn btn-default dropdown-toggle" type="button"
 					id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
 					aria-expanded="true">
-					Dropdown <span class="caret"></span>
+					Add <span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a data-toggle="modal" data-target="#add_artist">Add
-							Artist</a></li>
 					<li><a data-toggle="modal" data-target="#add_track">Add
 							Album</a></li>
+					<li><a href='javascript:void(0)' onclick='login_screen()'>Log In</a></li>
 				</ul>
 			</div>
 		</div>
@@ -40,68 +39,33 @@
 			<table id='top_table'>
 				<thead>
 					<tr>
-						<th></th>
 						<th>Artist</th>
-						<th>Album</th>
+<!-- 						<th>Album</th> -->
 						<th>Song</th>
 						<th>Ranking</th>
+						<?php if ( isset( $isAdmin ) && $isAdmin == 1 ): ?>
+							<td>Action</td>
+						<?php endif; ?>
+
 					</tr>
-				<tbody>
-					<?php for( $index = 0; $index < count( $tbody ); $index++ ): ?>
-					<tr>
-						<td><?=($index + 1)?></td>
-						<?php foreach ( $tbody[ $index ] as $k => $v ): ?>
-						<td><?php if( is_numeric( $v )): ?> <span
-							class='glyphicon glyphicon-triangle-top' style='color: green;'></span>
-							<?php endif; ?> <?=$v?></td>
-						<?php endforeach; ?>
+
+					<tbody>
+					<?php for( $index = 0; $index < count( $tbody ); $index++ ): ?><tr>
+						<td><?=$tbody[ $index ]['artist_display_name']?></td>
+						<td><?=$tbody[ $index ]['track_name']?></td>
+						<td><?=$tbody[ $index ]['rank']?></td>
+						<?php if ( isset( $isAdmin ) && $isAdmin == 1 ): ?>
+							<td><a class='btn btn-info' href='javascript:void(0)' onclick='alert_track(<?=$tbody[ $index ]['track_id']?>)'>Alter</a></td>
+						<?php endif; ?>				
 					</tr>
 					<?php endfor; ?>
-
-
 				</tbody>
 			</table>
 		</div>
 
 	</div>
 
-
-
-	<!-- Modal -->
-	<!-- 	<div class="modal fade" id="add_artist" tabindex="-1" role="dialog" -->
-	<!-- 		aria-labelledby="myModalLabel"> -->
-	<!-- 		<div class="modal-dialog" role="document"> -->
-	<!-- 			<div class="modal-content"> -->
-	<!-- 				<div class="modal-header"> -->
-	<!-- 					<button type="button" class="close" data-dismiss="modal" -->
-	<!-- 						aria-label="Close"> -->
-	<!-- 						<span aria-hidden="true">&times;</span> -->
-	<!-- 					</button> -->
-	<!-- 					<h4 class="modal-title" id="myModalLabel">Add Artist</h4> -->
-	<!-- 				</div> -->
-	<!-- 				<div class="modal-body"> -->
-	<!-- 					<form> -->
-	<!-- 						<div class='form-group'> -->
-	<!-- 							<label class='label label-default'>Username: </label> <input -->
-	<!-- 								type='text' class='form-control' id='username'> -->
-	<!-- 						</div> -->
-	<!-- 						<div class='form-group'> -->
-	<!-- 							<label class='label label-default'>Display Name: </label> <input -->
-	<!-- 								type='text' class='form-control' id='display_name'> -->
-	<!-- 						</div> -->
-
-	<!-- 					</form> -->
-	<!-- 				</div> -->
-	<!-- 				<div class="modal-footer"> -->
-	<!-- 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-	<!-- 					<button type="button" class="btn btn-primary">Save changes</button> -->
-	<!-- 				</div> -->
-	<!-- 			</div> -->
-	<!-- 		</div> -->
-	<!-- 	</div> -->
-	<!-- End Modal -->
-
-
+	<div id='display'></div>
 
 	<!-- Modal -->
 	<div class="modal fade" id="add_track" tabindex="-1" role="dialog"
@@ -120,6 +84,7 @@
 						<div id='stored_artist' class='form-group'>
 							<label class='label label-default'>Artist: </label> <select
 								id='artist' class='form-control'>
+								<option>Choose Artist</option>
 								<?php for( $index = 0; $index < count( $artist ); $index++ ): ?>
 								<option value='<?=$artist[ $index ]['artist_id'] ?>'>
 									<?=$artist[ $index ]['artist_display_name']?>
@@ -129,7 +94,7 @@
 						</div>
 
 						<div class='form-group'>
-							<a href='javascript:void(0)' onclick='display("modal_part")'>Add
+							<a href='javascript:void(0)' onclick='display_new_artist()'>Add
 								New Artist</a>
 						</div>
 						<div id='modal_part'>
@@ -143,6 +108,24 @@
 									type='text' class='form-control' id='display_name'>
 							</div>
 							<hr>
+						</div>
+						<div id='album_section'>
+							<div id='album_part' class='form-group'>
+								<label class='label label-default'>Album: </label> <select
+									class='form-control' id='album'></select>
+							</div>
+							<div class='form-group'>
+								<a href='javascript:void(0)' onclick='display_new_album()'>Add
+									New Album</a>
+							</div>
+							<div id='modal_album'>
+								<hr>
+								<div class='form-group'>
+									<label class='label label-default'>New Album Name: </label> <input
+										type='text' class='form-control' id='new_album'>
+								</div>
+								<hr>
+							</div>
 						</div>
 						<div class='form-group'>
 							<label class='label label-default'>Track Name: </label> <input
@@ -173,51 +156,7 @@
 		src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js'></script>
 	<script src='./assets/scripts/bootstrap.min.js'></script>
 	<script src='./assets/datatables/js/jquery.dataTables.min.js'></script>
-
-
-
-
-	<script>
-		$(document).ready(function() {
-			$('#modal_part').toggle();
-
-			$('#top_table').DataTable({
-				"order" : [ [ 4, "desc" ] ]
-			});
-
-			$('#save_track').on('click', function() {
-				addArtist();
-
-			});
-
-		});
-
-		function display(portion) {
-			$('#modal_part').toggle();
-			$('#stored_artist').toggle();
-
-		}
-
-		function addArtist() {
-
-			var mString = {};
-			mString.action = 'add_artist';
-
-			if ($('#display_name').val().trim().length >= 2 && $('#username').val().trim().length >= 2) {
-				mString.name = $('#username').val();
-				mString.display_name = $('#display_name').val();
-			} else {
-				mString.artist = $('#artist').val().trim();
-			}
-			$.get('', mString, function(data) {
-				alert(data);
-			});
-			
-			$('#display_name').val('');
-			$('#username').val('');
-			
-		}
-	</script>
+	<script src='./assets/scripts/chart.js?ver=aoisjdf'></script>
 
 
 </body>
