@@ -55,6 +55,26 @@ function login_screen() {
 	
 }
 
+function increase_pop( track_id ) {
+	var mString = {};
+	mString.action = 'increase_pop';
+	mString.track_id = track_id;
+	$.get('', mString, function(data) {
+		$('#display').html( data );
+	});
+	
+}
+
+function decrease_pop( track_id ) {
+	var mString = {};
+	mString.action = 'decrease_pop';
+	mString.track_id = track_id;
+	$.get('', mString, function(data) {
+		$('#display').html( data );
+	});
+	
+}
+
 function addArtist() {
 
 	var mString = {};

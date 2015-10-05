@@ -13,7 +13,13 @@
 	href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">
 
 
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  th {
+	text-align: center;
+  }
+</style>
 </head>
 <body>
 	<nav class='navbar navbar-default'>
@@ -26,8 +32,10 @@
 					Menu <span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+				<?php if ( isset( $_SESSION['username'] ) ): ?>
 					<li><a data-toggle="modal" data-target="#add_track">Add
 							Album</a></li>
+				<?php endif; ?>			
 					<li>
 					<?php if ( !isset( $_SESSION['username'] ) ): ?>
 					<a href='javascript:void(0)' onclick='login_screen()'>Log In</a>

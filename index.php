@@ -1,6 +1,8 @@
 <?php
-session_start (); 
+session_start ();
 
+if ( isset( $_SESSION['username']))
+ $isAdmin = 1;
 function __autoload($classname) {
  if (file_exists ( "./classes/$classname.class.php" )) {
   require "./classes/$classname.class.php";
@@ -8,7 +10,6 @@ function __autoload($classname) {
   echo "Error: Could not find Class.";
  }
 }
-
 
 $user = new User ();
 $tracks = new Track ();
@@ -18,24 +19,23 @@ $albums = new Album ();
 $artist = $artists->getAllArtist ();
 $tbody = $tracks->getAll ();
 
-if ( $_REQUEST['action'] == 'logout'){
- unset( $_SESSION['username']);
- unset( $user );
- unset( $_REQUEST['action'] );
+if ($_REQUEST ['action'] == 'logout') {
+ unset ( $_SESSION ['username'] );
+ unset ( $user );
+ unset ( $_REQUEST ['action'] );
 }
 
-$action = isset ( $_REQUEST['action'] ) ? trim ( strtolower ( $_REQUEST['action'] ) ) : '';
-if( $action == 'login'){
-    $isAdmin = $user->login( $_POST['user'], $_POST['pass'] );
-    if ( $isAdmin != 0 ) {
-     $_SESSION['username'] = $user->getUsername();
-    }
+$action = isset ( $_REQUEST ['action'] ) ? trim ( strtolower ( $_REQUEST ['action'] ) ) : '';
+if ($action == 'login') {
+ $isAdmin = $user->login ( $_POST ['user'], $_POST ['pass'] );
+ if ($isAdmin != 0) {
+  $_SESSION ['username'] = $user->getUsername ();
+ }
 }
 
-if ( !isset($_REQUEST['action']) || $action == 'login'){
-    
-    include './views/header.html';
-
+if (! isset ( $_REQUEST ['action'] ) || $action == 'login') {
+ 
+ include './views/header.html';
 }
 
 switch ($action) {
@@ -44,17 +44,26 @@ switch ($action) {
   include './views/login.html';
   break;
  case 'login_in' :
-
-     main ( $tbody, $artist, $isAdmin );
+  main ( $tbody, $artist, $isAdmin );
   break;
- case 'logout':
-     session_destroy();
-     break;
+ case 'logout' :
+  session_destroy ();
+  break;
  case 'add_artist' :
   if (isset ( $_GET ['name'] ) && isset ( $_GET ['display_name'] ))
    echo "Received new Artist {$_GET['name']} and {$_GET['display_name']}.";
   elseif (isset ( $_GET ['artist'] ))
    echo "Using Artist, {$_GET['artist']}.";
+  break;
+ case 'increase_pop' :
+//   echo "Increase popularity triggered.\nWorking on it.";
+  $tracks->increasePopularity( $_GET['track_id'] );
+  main ( $tbody, $artist, $isAdmin );
+  break;
+ case 'decrease_pop' :
+  //echo "Decrease popularity triggered.\nWorking on it.";
+  $tracks->decreasePopularity( $_GET['track_id'] );
+  main ( $tbody, $artist, $isAdmin );
   break;
  case 'get_albums' :
   $obj = array ();
@@ -69,7 +78,6 @@ switch ($action) {
  default :
   main ( $tbody, $artist );
 }
-
 function main($tbody, $artist, $isAdmin = 0) {
  include './views/main.php';
 }

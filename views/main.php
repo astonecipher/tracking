@@ -8,18 +8,21 @@
 						<th>Song</th>
 						<th>Ranking</th>
 						<?php if ( isset( $_SESSION['username'] ) ): ?>
-							<td>Action</td>
+							<th>Action</th>
 						<?php endif; ?>
 
 					</tr>
 
 					<tbody>
 					<?php for( $index = 0; $index < count( $tbody ); $index++ ): ?><tr>
-						<td><?=$tbody[ $index ]['artist_display_name']?></td>
-						<td><?=$tbody[ $index ]['track_name']?></td>
-						<td><?=$tbody[ $index ]['rank']?></td>
+						<td class='ol-md-2'><?=$tbody[ $index ]['artist_display_name']?></td>
+						<td class='col-md-4'><?=$tbody[ $index ]['track_name']?></td>
+						<td class='col-md-1'><?php echo number_format( $tbody[ $index ]['rank'], 3); ?></td>
 						<?php if ( isset( $_SESSION['username'] ) ): ?>
-							<td><a class='btn btn-info' href='javascript:void(0)' onclick='alert_track("<?=$tbody[ $index ]['track_name']?>")'>Alter</a></td>
+							<td  class='col-md-4'>
+							<a class='btn btn-success' href='javascript:void(0)' onclick='increase_pop("<?=$tbody[ $index ]['track_id']?>")'>Increase Popularity</a>
+							<a class='btn btn-danger' href='javascript:void(0)' onclick='decrease_pop("<?=$tbody[ $index ]['track_id']?>")'>Decrease Popularity</a>
+							</td>
 						<?php endif; ?>				
 					</tr>
 					<?php endfor; ?>
