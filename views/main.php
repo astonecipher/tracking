@@ -1,38 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-<script
-	src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js'></script>
-
-<link rel="stylesheet" type="text/css"
-	href="./assets/css/bootstrap.min.css">
-
-<link rel="stylesheet" type="text/css"
-	href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">
-
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-	<nav class='navbar navbar-default'>
-		<div class='container-fluid'>
-			<span class='navbar-brand'>Song List</span>
-			<div class="dropdown pull-right">
-				<button class="btn btn-default dropdown-toggle" type="button"
-					id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-					aria-expanded="true">
-					Add <span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a data-toggle="modal" data-target="#add_track">Add
-							Album</a></li>
-					<li><a href='javascript:void(0)' onclick='login_screen()'>Log In</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
 	<div class="container">
 
 		<div id='display'>
@@ -40,10 +5,9 @@
 				<thead>
 					<tr>
 						<th>Artist</th>
-<!-- 						<th>Album</th> -->
 						<th>Song</th>
 						<th>Ranking</th>
-						<?php if ( isset( $isAdmin ) && $isAdmin == 1 ): ?>
+						<?php if ( isset( $_SESSION['username'] ) ): ?>
 							<td>Action</td>
 						<?php endif; ?>
 
@@ -54,8 +18,8 @@
 						<td><?=$tbody[ $index ]['artist_display_name']?></td>
 						<td><?=$tbody[ $index ]['track_name']?></td>
 						<td><?=$tbody[ $index ]['rank']?></td>
-						<?php if ( isset( $isAdmin ) && $isAdmin == 1 ): ?>
-							<td><a class='btn btn-info' href='javascript:void(0)' onclick='alert_track(<?=$tbody[ $index ]['track_id']?>)'>Alter</a></td>
+						<?php if ( isset( $_SESSION['username'] ) ): ?>
+							<td><a class='btn btn-info' href='javascript:void(0)' onclick='alert_track("<?=$tbody[ $index ]['track_name']?>")'>Alter</a></td>
 						<?php endif; ?>				
 					</tr>
 					<?php endfor; ?>
@@ -65,8 +29,7 @@
 
 	</div>
 
-	<div id='display'></div>
-
+<div id='response_modal'></div>
 	<!-- Modal -->
 	<div class="modal fade" id="add_track" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel">

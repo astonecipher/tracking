@@ -1,5 +1,6 @@
 <?php
-session_start ();
+session_start (); 
+
 function __autoload($classname) {
  if (file_exists ( "./classes/$classname.class.php" )) {
   require "./classes/$classname.class.php";
@@ -8,20 +9,47 @@ function __autoload($classname) {
  }
 }
 
-$action = isset ( $_REQUEST['action'] ) ? trim ( strtolower ( $_REQUEST['action'] ) ) : '';
+
 $user = new User ();
 $tracks = new Track ();
 $artists = new Artist ();
 $albums = new Album ();
+
+$artist = $artists->getAllArtist ();
+$tbody = $tracks->getAll ();
+
+if ( $_REQUEST['action'] == 'logout'){
+ unset( $_SESSION['username']);
+ unset( $user );
+ unset( $_REQUEST['action'] );
+}
+
+$action = isset ( $_REQUEST['action'] ) ? trim ( strtolower ( $_REQUEST['action'] ) ) : '';
+if( $action == 'login'){
+    $isAdmin = $user->login( $_POST['user'], $_POST['pass'] );
+    if ( $isAdmin != 0 ) {
+     $_SESSION['username'] = $user->getUsername();
+    }
+}
+
+if ( !isset($_REQUEST['action']) || $action == 'login'){
+    
+    include './views/header.html';
+
+}
 
 switch ($action) {
  
  case 'login_screen' :
   include './views/login.html';
   break;
- case 'login_details' :
-  echo "working on it.";
+ case 'login_in' :
+
+     main ( $tbody, $artist, $isAdmin );
   break;
+ case 'logout':
+     session_destroy();
+     break;
  case 'add_artist' :
   if (isset ( $_GET ['name'] ) && isset ( $_GET ['display_name'] ))
    echo "Received new Artist {$_GET['name']} and {$_GET['display_name']}.";
@@ -39,12 +67,10 @@ switch ($action) {
   echo json_encode ( $obj );
   break;
  default :
-  $artist = $artists->getAllArtist ();
-  $tbody = $tracks->getAll ();
   main ( $tbody, $artist );
 }
 
-function main($tbody, $artist) {
+function main($tbody, $artist, $isAdmin = 0) {
  include './views/main.php';
 }
 

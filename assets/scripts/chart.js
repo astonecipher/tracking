@@ -2,16 +2,13 @@ $(document).ready(function() {
 	$('#modal_part').toggle();
 	$('#modal_album').toggle();
 	$('#album_section').toggle();
-	
-	
-	
-	
-	$('#top_table').DataTable({
-		"order" : [ [ 2, "desc" ] ]
-	});
 
 	$('#save_track').on('click', function() {
 		addArtist();
+	});
+
+	$('#top_table').DataTable({
+		"order" : [ [ 2, "desc" ] ]
 	});
 
 	$('#artist').on('change', function() {
@@ -29,9 +26,9 @@ function display_new_artist() {
 
 }
 
-function display_new_album(){
+function display_new_album() {
 	$('#modal_album').toggle();
-	$('#album_part').toggle();	
+	$('#album_part').toggle();
 }
 function getAlbums(artist_id) {
 
@@ -48,23 +45,12 @@ function getAlbums(artist_id) {
 
 }
 
-function login_screen(){
+function login_screen() {
 	var mString = {};
 	mString.action = 'login_screen';
-	$.get('',mString, function( data ){
-		$('#display').html( data );
+	$.get('', mString, function(data) {
+		$('#response_modal').html(data);
 		$('#login').modal('show');
-	});
-}
-
-
-function login(){
-	var mString = {};
-	mString.action = 'login_details';
-	mString.user = $('#user').val();
-	mString.pass = $('#pass').val();
-	$.post('', mString, function( data ) {
-		$('#login_display').html( data );
 	});
 	
 }
@@ -88,4 +74,10 @@ function addArtist() {
 	$('#display_name').val('');
 	$('#username').val('');
 
+}
+
+function alert_track( id ){
+	
+	alert( "The modification of track: '" + id + "' is not possible, yet. This feature is still in the works.");
+	
 }
